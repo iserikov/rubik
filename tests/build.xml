@@ -1,0 +1,38 @@
+<project name="Test" default="test">
+  <target name="table">
+    <ant dir="../table"/>
+  </target>
+  <target name="mkdir">
+    <mkdir dir="work"/>
+  </target>
+  <target name="compile" depends="mkdir,table">
+    <javac destdir="work" includeantruntime="false" debug="true">
+      <src path="src"/>
+      <src path="../table/work"/>
+      <src path="../main/src"/>
+      <include name="ReachedAndTable.java"/>
+      <include name="Table.java"/>
+      <include name="Reached.java"/>
+      <include name="Canonical.java"/>
+      <include name="Op.java"/>
+      <compilerarg value="-Xlint"/>
+      <classpath>
+        <pathelement location="/usr/share/java/junit4.jar"/>
+      </classpath>
+    </javac>
+  </target>
+  <target name="test" depends="compile">
+    <junit showoutput="on" haltonfailure="true">
+      <classpath>
+        <pathelement location="/usr/share/java/junit4.jar"/>
+        <pathelement location="work"/>
+      </classpath>
+      <formatter type="plain" usefile="false"/>
+      <test name="ReachedAndTable"/>
+    </junit>
+  </target>
+  <target name="clean">
+    <ant dir="../table" target="clean"/>
+    <delete dir="work"/>
+  </target>
+</project>

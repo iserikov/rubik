@@ -1,0 +1,63 @@
+<project name="Cube" default="run">
+  <target name="table">
+    <ant dir="../table"/>
+  </target>
+  <target name="mkdir">
+    <mkdir dir="work"/>
+  </target>
+  <target name="compile" depends="mkdir,table">
+    <javac destdir="work" includeantruntime="false" debug="true">
+      <src path="src"/>
+      <src path="../table/work"/>
+      <compilerarg value="-Xlint"/>
+    </javac>
+  </target>
+  <target name="jar" depends="compile">
+    <jar destfile="work/cube.jar">
+      <manifest>
+        <attribute name="Main-Class" value="Cube" />
+      </manifest>
+      <fileset dir="work" includes="**/*.class"/>
+    </jar>
+  </target>
+  <target name="memget">
+    <exec executable="grep" outputproperty="meminfo">
+      <arg value="MemFree"/>
+      <arg value="/proc/meminfo"/>
+    </exec>
+    <loadresource property="memval">
+      <propertyresource name="meminfo"/>
+      <filterchain>
+        <tokenfilter>
+          <filetokenizer/>
+          <replaceregex pattern="MemFree: *([0-9]+).*$" replace="\1" flags="g"/>
+        </tokenfilter>
+      </filterchain>
+    </loadresource>
+    <math result="mem" datatype="int">
+      <op op="/">
+        <op op="*">
+          <num value="${memval}"/>
+          <num value="8"/>
+        </op>
+        <num value="10"/>
+      </op>
+    </math>
+  </target>
+  <target name="run" depends="compile,memget">
+    <java classname="Cube" classpath="work" fork="yes" failonerror="true">
+      <jvmarg value="-ea"/>
+      <arg line="${args}"/>
+      <jvmarg value="-Xmx${mem}K"/>
+    </java>
+  </target>
+  <target name="clean">
+    <ant dir="../table" target="clean"/>
+    <delete dir="work"/>
+  </target>
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+    <classpath>
+      <pathelement location="/usr/share/java/ant-contrib.jar" />
+    </classpath>
+  </taskdef>
+</project>

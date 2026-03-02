@@ -1,0 +1,19 @@
+<project name="Tables" default="generate">
+  <property name="destination" location="work/Table.java"/>
+  <property name="source" location="src/table.py"/>
+  <target name="mkdir">
+    <mkdir dir="work"/>
+  </target>
+  <target name="check" depends="mkdir" unless="xmlBuild.notRequired" >
+    <uptodate property="generation.notRequired" srcfile="${source}" targetfile="${destination}"/>
+  </target>
+  <target name="generate" depends="check" unless="generation.notRequired">
+    <exec executable="python3">
+       <arg value="${source}"/>
+       <arg value="${destination}"/>
+    </exec>
+  </target>
+  <target name="clean">
+    <delete dir="work"/>
+  </target>
+</project>

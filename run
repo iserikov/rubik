@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+args=
+for a in "$@"; do
+    args+=' "'$a'"'
+done
+args=${args# }
+
+exec ant -f "${0%/*}/main/build.xml" -Dargs="$args"
